@@ -18,7 +18,8 @@ function sleep(ms) {
 // Cancel example
 let testPosion = 0;
 const taskCancelLine = new PauseTaskLine(async function* () {
-  yield await sleep(500);
+  const time = yield await sleep(500);
+  console.log(time); // output: 500
   testPosion++;
   yield await sleep(500);
   testPosion++;
