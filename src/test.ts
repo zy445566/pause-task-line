@@ -1,7 +1,7 @@
 import * as assert from "assert";
 import { PauseTaskLine } from "./index";
 
-function sleep(ms) {
+function sleep(ms): Promise<number> {
   return new Promise((resolve) => setTimeout(() => resolve(ms), ms));
 }
 
@@ -68,23 +68,43 @@ const testUnit = {
   [Symbol("test.doSomeThing.nest.action")]: async function () {
     let testPosion = 0;
     const taskLine = new PauseTaskLine(async function* () {
-      yield await sleep(500);
-      testPosion++;
+      testPosion += Number(yield await sleep(500));
       yield await (async function* () {
-        yield await sleep(500);
-        testPosion++;
-        yield await sleep(500);
-        testPosion++;
+        testPosion += yield await sleep(501);
+        testPosion += yield await sleep(502);
       })();
-      yield await sleep(500);
-      testPosion++;
+      testPosion += Number(yield await sleep(500));
     });
     await Promise.all([
       taskLine.run(),
       (async () => {
         await sleep(1100);
         await taskLine.cancel();
-        assert.equal(testPosion, 2, "test.doSomeThing.action.error");
+        assert.equal(testPosion, 1001, "test.doSomeThing.nest.action.error");
+      })(),
+    ]);
+  },
+  [Symbol("test.doSomeThing.nest.resume.action")]: async function () {
+    let testPosion = 0;
+    const taskLine = new PauseTaskLine(async function* () {
+      testPosion += Number(yield await sleep(500));
+      yield await (async function* () {
+        testPosion += yield await sleep(501);
+        testPosion += yield await sleep(502);
+      })();
+      testPosion += Number(yield await sleep(500));
+    });
+    await Promise.all([
+      taskLine.run(),
+      (async () => {
+        await sleep(1100);
+        await taskLine.pause();
+        await taskLine.resume();
+        assert.equal(
+          testPosion,
+          2003,
+          "test.doSomeThing.nest.resume.action.error"
+        );
       })(),
     ]);
   },

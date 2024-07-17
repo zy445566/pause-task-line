@@ -18,6 +18,7 @@ export class PauseTaskLine {
     while (this.taskList.length > 0) {
       const asyncGen = this.taskList[this.taskList.length - 1];
       const { value, done } = await asyncGen.next(this.nextValueRes);
+      this.nextValueRes = value;
       if (this.isCanel) {
         this.events.emit("canel");
         break;
@@ -32,9 +33,6 @@ export class PauseTaskLine {
       }
       if (isGenerator(value)) {
         this.taskList.push(value);
-        this.nextValueRes = undefined;
-      } else {
-        this.nextValueRes = value;
       }
     }
   }
