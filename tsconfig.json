@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target":"es6",
+        "lib": ["es2018"],
+        "rootDir": "./src/",
+        "outDir": "./build/",
+        "declaration": true,
+        "experimentalDecorators": true,
+        "sourceMap": true
+    },
+    "include": [
+        "src/**/*"
+    ]
+}

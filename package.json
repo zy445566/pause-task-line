@@ -1,0 +1,34 @@
+{
+  "name": "task-line",
+  "version": "1.0.0",
+  "description": "Pausing task pipeline",
+  "main": "build/index.js",
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "npx tsc",
+    "test": "npm run build && node ./build/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zy445566/task-line.git"
+  },
+  "keywords": [
+    "task",
+    "pipeline",
+    "line",
+    "pause",
+    "interrupt",
+    "suspend"
+  ],
+  "author": "zy445566",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zy445566/task-line/issues"
+  },
+  "homepage": "https://github.com/zy445566/task-line#readme",
+  "devDependencies": {
+    "@types/node": "^16.0.0",
+    "typescript": "^5.5.2"
+  },
+  "dependencies": {}
+}
