@@ -1,11 +1,11 @@
-# task-line
+# pause-task-line
 
 Pausing task pipeline
 
 ## Installation
 
 ```
-$ npm install task-line
+$ npm install pause-task-line
 ```
 
 ## Examples
