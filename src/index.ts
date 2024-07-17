@@ -9,7 +9,7 @@ export class PauseTaskLine {
   constructor(taskFunc: () => AsyncGenerator) {
     this.task = taskFunc();
   }
-  async run() {
+  async run(): Promise<boolean> {
     if (this.isCanel) {
       throw new Error("the task is be canceled");
     }
@@ -33,8 +33,9 @@ export class PauseTaskLine {
     } finally {
       this.isRunning = false;
     }
+    return true;
   }
-  async cancel() {
+  async cancel(): Promise<boolean> {
     if (!this.isRunning) {
       throw new Error("the task is not runing");
     }
@@ -45,7 +46,7 @@ export class PauseTaskLine {
       });
     });
   }
-  async pause() {
+  async pause(): Promise<boolean> {
     if (!this.isRunning) {
       throw new Error("the task is not runing");
     }
@@ -56,12 +57,12 @@ export class PauseTaskLine {
       });
     });
   }
-  async resume() {
+  async resume(): Promise<boolean> {
     if (!this.isPause) {
       throw new Error("the task is not be pasuse");
     }
     this.isPause = false;
-    await this.run();
+    return await this.run();
   }
 }
 
