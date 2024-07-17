@@ -52,4 +52,28 @@ await Promise.all([
     await taskPauseLine.resume();
   })(),
 ]);
+
+// nest sub task example
+const taskSubLine = new PauseTaskLine(async function* () {
+  yield await sleep(500);
+  testPosion++;
+  // sub task
+  yield await (async function* () {
+    yield await sleep(500);
+    testPosion++;
+    yield await sleep(500);
+    testPosion++;
+  })();
+  yield await sleep(500);
+  testPosion++;
+});
+await Promise.all([
+  taskSubLine.run(),
+  (async () => {
+    await sleep(1100);
+    await taskSubLine.cancel();
+    await sleep(1100);
+    console.log(testPosion); // output: 2
+  })(),
+]);
 ```

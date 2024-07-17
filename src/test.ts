@@ -65,6 +65,29 @@ const testUnit = {
       })(),
     ]);
   },
+  [Symbol("test.doSomeThing.nest.action")]: async function () {
+    let testPosion = 0;
+    const taskLine = new PauseTaskLine(async function* () {
+      yield await sleep(500);
+      testPosion++;
+      yield await (async function* () {
+        yield await sleep(500);
+        testPosion++;
+        yield await sleep(500);
+        testPosion++;
+      })();
+      yield await sleep(500);
+      testPosion++;
+    });
+    await Promise.all([
+      taskLine.run(),
+      (async () => {
+        await sleep(1100);
+        await taskLine.cancel();
+        assert.equal(testPosion, 2, "test.doSomeThing.action.error");
+      })(),
+    ]);
+  },
   [Symbol("test.doSomeThing.cancel.resume")]: async function () {
     const taskLine = new PauseTaskLine(async function* () {
       yield await sleep(500);
