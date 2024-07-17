@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { TaskLine } from "./index";
+import { PauseTaskLine } from "./index";
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(() => resolve(ms), ms));
@@ -7,21 +7,21 @@ function sleep(ms) {
 
 const testUnit = {
   [Symbol("test.result")]: async function () {
-    const taskLine = new TaskLine(async function* () {
+    const taskLine = new PauseTaskLine(async function* () {
       const result = yield await Promise.resolve(true);
       assert.equal(result, true, "test.result.error");
     });
     await taskLine.run();
   },
   [Symbol("test.doSomeThing")]: async function () {
-    const taskLine = new TaskLine(async function* () {
+    const taskLine = new PauseTaskLine(async function* () {
       const result = yield await sleep(500);
       assert.equal(result, 500, "test.result.doSomeThing");
     });
     await taskLine.run();
   },
   [Symbol("test.doSomeThing.common")]: async function () {
-    const taskLine = new TaskLine(async function* () {
+    const taskLine = new PauseTaskLine(async function* () {
       yield await sleep(500);
       yield await sleep(500);
       yield await sleep(500);
@@ -47,7 +47,7 @@ const testUnit = {
   },
   [Symbol("test.doSomeThing.action")]: async function () {
     let testPosion = 0;
-    const taskLine = new TaskLine(async function* () {
+    const taskLine = new PauseTaskLine(async function* () {
       yield await sleep(500);
       testPosion++;
       yield await sleep(500);
@@ -66,7 +66,7 @@ const testUnit = {
     ]);
   },
   [Symbol("test.doSomeThing.cancel.resume")]: async function () {
-    const taskLine = new TaskLine(async function* () {
+    const taskLine = new PauseTaskLine(async function* () {
       yield await sleep(500);
       yield await sleep(500);
       yield await sleep(500);
@@ -89,7 +89,7 @@ const testUnit = {
     ]);
   },
   [Symbol("test.doSomeThing.cancel.resume")]: async function () {
-    const taskLine = new TaskLine(async function* () {
+    const taskLine = new PauseTaskLine(async function* () {
       yield await sleep(500);
       yield await sleep(500);
       yield await sleep(500);
@@ -112,7 +112,7 @@ const testUnit = {
     ]);
   },
   [Symbol("test.pause.error")]: async function () {
-    const taskLine = new TaskLine(async function* () {});
+    const taskLine = new PauseTaskLine(async function* () {});
     try {
       await taskLine.pause();
     } catch (error) {
@@ -124,7 +124,7 @@ const testUnit = {
     }
   },
   [Symbol("test.cancel.error")]: async function () {
-    const taskLine = new TaskLine(async function* () {});
+    const taskLine = new PauseTaskLine(async function* () {});
     try {
       await taskLine.cancel();
     } catch (error) {

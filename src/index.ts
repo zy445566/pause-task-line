@@ -1,5 +1,5 @@
 import * as Events from "events";
-export class TaskLine {
+export class PauseTaskLine {
   isPause: boolean = false;
   isCanel: boolean = false;
   isRunning: boolean = false;
@@ -65,4 +65,4 @@ export class TaskLine {
   }
 }
 
-export default TaskLine;
+export default PauseTaskLine;

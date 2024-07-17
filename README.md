@@ -11,13 +11,13 @@ $ npm install pause-task-line
 ## Examples
 
 ```js
-const { TaskLine } = require("pause-task-line");
+const { PauseTaskLine } = require("pause-task-line");
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(() => resolve(ms), ms));
 }
 // Cancel example
 let testPosion = 0;
-const taskCancelLine = new TaskLine(async function* () {
+const taskCancelLine = new PauseTaskLine(async function* () {
   yield await sleep(500);
   testPosion++;
   yield await sleep(500);
@@ -36,7 +36,7 @@ await Promise.all([
 ]);
 
 // pause and resume example
-const taskPauseLine = new TaskLine(async function* () {
+const taskPauseLine = new PauseTaskLine(async function* () {
   yield await sleep(500);
   yield await sleep(500);
   yield await sleep(500);
