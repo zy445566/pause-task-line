@@ -11,7 +11,7 @@ $ npm install task-line
 ## Examples
 
 ```js
-const { TaskLine } = require("task-line");
+const { TaskLine } = require("pause-task-line");
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(() => resolve(ms), ms));
 }
