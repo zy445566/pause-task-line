@@ -19,20 +19,24 @@ export class PauseTaskLine {
       const asyncGen = this.taskList[this.taskList.length - 1];
       const { value, done } = await asyncGen.next(this.nextValueRes);
       this.nextValueRes = value;
+      if (isGenerator(value)) {
+        this.taskList.push(value);
+      }
       if (this.isCanel) {
-        this.events.emit("canel");
+        this.events.emit("interrupt", {
+          action: "cancel",
+        });
         break;
       }
       if (this.isPause) {
-        this.events.emit("pause");
+        this.events.emit("interrupt", {
+          action: "pause",
+        });
         break;
       }
       if (done) {
         this.taskList.pop();
         continue;
-      }
-      if (isGenerator(value)) {
-        this.taskList.push(value);
       }
     }
   }
@@ -54,7 +58,8 @@ export class PauseTaskLine {
     }
     return await new Promise((resolve) => {
       this.isCanel = true;
-      this.events.once("canel", () => {
+      this.events.once("interrupt", (eventData) => {
+        this.isCanel = eventData.action === "cancel";
         return resolve(this.isCanel);
       });
     });
@@ -65,7 +70,8 @@ export class PauseTaskLine {
     }
     return await new Promise((resolve) => {
       this.isPause = true;
-      this.events.once("pause", () => {
+      this.events.once("interrupt", (eventData) => {
+        this.isPause = eventData.action === "pause";
         return resolve(this.isPause);
       });
     });

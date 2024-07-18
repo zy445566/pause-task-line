@@ -84,6 +84,31 @@ const testUnit = {
       })(),
     ]);
   },
+  [Symbol("test.doSomeThing.nest.puase.action")]: async function () {
+    let testPosion = 0;
+    const taskLine = new PauseTaskLine(async function* () {
+      testPosion += Number(yield await sleep(500));
+      yield await (async function* () {
+        testPosion += yield await sleep(501);
+        testPosion += yield await sleep(502);
+      })();
+      testPosion += Number(yield await sleep(500));
+    });
+    await Promise.all([
+      taskLine.run(),
+      (async () => {
+        await sleep(501);
+        await taskLine.pause();
+        await sleep(300);
+        await taskLine.resume();
+        assert.equal(
+          testPosion,
+          2003,
+          "test.doSomeThing.nest.puase.action.error"
+        );
+      })(),
+    ]);
+  },
   [Symbol("test.doSomeThing.nest.resume.action")]: async function () {
     let testPosion = 0;
     const taskLine = new PauseTaskLine(async function* () {
@@ -108,6 +133,34 @@ const testUnit = {
       })(),
     ]);
   },
+  [Symbol("test.doSomeThing.nest.pause.cancel.resume.action")]:
+    async function () {
+      let testPosion = 0;
+      const taskLine = new PauseTaskLine(async function* () {
+        testPosion += Number(yield await sleep(500));
+        yield await (async function* () {
+          testPosion += yield await sleep(501);
+          testPosion += yield await sleep(502);
+        })();
+        testPosion += Number(yield await sleep(500));
+      });
+      await Promise.all([
+        taskLine.run(),
+        (async () => {
+          await sleep(1100);
+          await Promise.all([taskLine.cancel(), taskLine.pause()]);
+          try {
+            await taskLine.resume();
+          } catch (error) {
+            assert.equal(
+              error.message,
+              "the task is not be pasuse",
+              "test.doSomeThing.nest.pause.cancel.resume.action.error"
+            );
+          }
+        })(),
+      ]);
+    },
   [Symbol("test.doSomeThing.cancel.resume")]: async function () {
     const taskLine = new PauseTaskLine(async function* () {
       yield await sleep(500);
