@@ -65,6 +65,25 @@ const testUnit = {
       })(),
     ]);
   },
+  [Symbol("test.doSomeThing.throw")]: async function () {
+    let testPosion = 0;
+    const taskLine = new PauseTaskLine(async function* () {
+      testPosion = 1;
+      throw new Error("A_Error");
+    });
+    try {
+      await Promise.all([
+        taskLine.run(),
+        (async () => {
+          await sleep(600);
+          assert.equal(testPosion, 2, "test.doSomeThing.throw.error");
+        })(),
+      ]);
+    } catch (error) {
+      assert.equal(error.message, "A_Error", "test.doSomeThing.throw.error");
+      assert.equal(testPosion, 1, "test.doSomeThing.throw.error");
+    }
+  },
   [Symbol("test.doSomeThing.nest.action")]: async function () {
     let testPosion = 0;
     const taskLine = new PauseTaskLine(async function* () {
@@ -83,6 +102,41 @@ const testUnit = {
         assert.equal(testPosion, 1001, "test.doSomeThing.nest.action.error");
       })(),
     ]);
+  },
+  [Symbol("test.doSomeThing.nest.action.throw")]: async function () {
+    let testPosion = 0;
+    const taskLine = new PauseTaskLine(async function* () {
+      testPosion += Number(yield await sleep(500));
+      yield await (async function* () {
+        testPosion += yield await sleep(501);
+        throw new Error("A_Error");
+      })();
+      testPosion += Number(yield await sleep(500));
+    });
+    try {
+      await Promise.all([
+        taskLine.run(),
+        (async () => {
+          await sleep(1100);
+          assert.equal(
+            testPosion,
+            1002,
+            "test.doSomeThing.nest.action.throw.error"
+          );
+        })(),
+      ]);
+    } catch (error) {
+      assert.equal(
+        error.message,
+        "A_Error",
+        "test.doSomeThing.nest.action.throw.error"
+      );
+      assert.equal(
+        testPosion,
+        1001,
+        "test.doSomeThing.nest.action.throw.error"
+      );
+    }
   },
   [Symbol("test.doSomeThing.nest.puase.action")]: async function () {
     let testPosion = 0;
